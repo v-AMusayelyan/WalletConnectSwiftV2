@@ -114,8 +114,7 @@ public final class RelayClient {
 
     /// Completes when networking client sends a request, error if it fails on client side
     public func publish(topic: String, payload: String, tag: Int, prompt: Bool, ttl: Int) async throws {
-        let request = Publish(params: .init(topic: topic, message: payload, ttl: ttl, prompt: prompt, tag: tag))
-            .asRPCRequest()
+        let request = Publish(params: .init(topic: topic, message: payload, ttl: ttl, prompt: prompt, tag: tag)).asRPCRequest()
         let message = try request.asJSONEncodedString()
         logger.debug("[RelayClient]: Publishing payload on topic: \(topic)")
         try await dispatcher.protectedSend(message)
@@ -124,8 +123,7 @@ public final class RelayClient {
     public func subscribe(topic: String) async throws {
         logger.debug("[RelayClient]: Subscribing to topic: \(topic)")
         let rpc = Subscribe(params: .init(topic: topic))
-        let request = rpc
-            .asRPCRequest()
+        let request = rpc.asRPCRequest()
         let message = try! request.asJSONEncodedString()
         try await dispatcher.protectedSend(message)
         observeSubscription(requestId: request.id!, topics: [topic])
@@ -135,8 +133,7 @@ public final class RelayClient {
         guard !topics.isEmpty else { return }
         logger.debug("[RelayClient]: Subscribing to topics: \(topics)")
         let rpc = BatchSubscribe(params: .init(topics: topics))
-        let request = rpc
-            .asRPCRequest()
+        let request = rpc.asRPCRequest()
         let message = try! request.asJSONEncodedString()
         try await dispatcher.protectedSend(message)
         observeSubscription(requestId: request.id!, topics: topics)
@@ -171,8 +168,7 @@ public final class RelayClient {
         }
         logger.debug("[RelayClient]: Unsubscribing from topic: \(topic)")
         let rpc = Unsubscribe(params: .init(id: subscriptionId, topic: topic))
-        let request = rpc
-            .asRPCRequest()
+        let request = rpc.asRPCRequest()
         let message = try! request.asJSONEncodedString()
         rpcHistory.deleteAll(forTopic: topic)
         dispatcher.protectedSend(message) { [weak self] error in
